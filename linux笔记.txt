@@ -1,0 +1,798 @@
+ctrl+c #终止任务
+ls #文件 
+ll
+who #有哪些用户
+w  #返回的休息更多
+uname #操作系统信息  -i#主机名 -i#硬件和软件等
+date #日期
+cal  #日历
+clear #清楚
+file 查看文件属性
+su #切换用户
+exit
+passwd#密码设置
+userdel#用户删除
+sudo su #
+passwd
+useradd
+#帮助命令
+xxx --help
+whatis xxx
+man xxx
+man -k 
+cd #切换某个  ~ #当前目录的加目录 # = $xxx  -#切换到上一个目录  ./#当前目录  ../#上一个目录
+pwd #路径  
+ls #展示工作目录  -a#显示隐藏的  -i#类型的形式表示 -d#显示文件的属性 -h#显示大小 -lh# -al#
+ls -S -t -R
+touch #生成文件
+ls *xxx
+#通配符
+* #匹配任何次数
+？匹配任意的一次
+[xxx] 匹配一次
+[a-n] 匹配小写一次
+[A-N] 匹配小写一次
+[^a-z]匹配任意小写字母意外的一次
+[0-9]
+#删除的方式
+rm -i#给出提示信息  -f 不询问强制删除  -r删除目录 -f删除文件夹
+rm xxx/* 
+rmdir 删除空的文件夹
+cp source target  source1 source2 target -r#递归地复制目录
+-i #覆盖前给出提示  -p 保留原属性   -f强制执行
+mv
+
+tab# 补全命令/地址 很有用
+↑↓#翻越历史命令
+ctrl+A#将光标移动到命令行开头
+ctrl+E#将光标移动到命令行结尾 
+ctrl+C#强制终止当前命令 
+Ctrl+Z#暂停当前任务 
+ctrl+R#在历史命令中搜索 
+ctrl+U#剪切光标左侧的所有命令
+ctrl+K#删除光标右侧的所有命令 
+ctrl+Y#粘贴 
+Ctrl+右箭头#向右移动一个单词 
+Ctrl+D#相当于exit 
+ctrl+L#清屏，作用于clear相等
+!!#执行上一条命令
+tree #递归地展示文件
+# 17.输出重定向
+> xxxx 文件名
+echo ”xxxx“  >> xxx文件名 给文本中加入什么
+> #覆盖  >> #追加
+cat 1> xxx  2> 1正确 2是错误的  两个可以同时输出
+> 2>&1 记录同一个文件
+&>
+find ~ -xxx  ~- user  ~-size  ~ atime  ~-mtime   ~-type  ~-name
+locate filenames
+updatedb
+which ls
+which $path
+#别名可以简化
+alias 返回别名  alias ll alias rm  unalias rm  unalias -a
+grep 
+让别名永久生效 >> ~./bashrc
+source ~/.bashrc
+#软连接
+指向另一个文件的文件
+In -s ~smr  /home/zyfone/hard-disk/zyt/smr-1.3.1-linux-x86_64/smr-1.3.1
+
+#硬连接
+In xxx
+touch
+df #查看磁盘空间  -h -h ./    du -h 
+gzip #压缩文件  -c 保存源文件    -v 显示文件的率
+unzip -c #解压  
+zip -r unzip 
+tar -c建立新的打包文件   -x解压   -v显示详细信息 -f指定文件
+tar --cvf -czf -cjf  -xzf
+md5sum ./* > md5.txt
+md5sum -c md5.txt
+
+# 生成测试文件：
+for i in {1..100};do echo $i >> test.txt done
+
+# wc 语法：
+wc  -options 文件名
+
+# -l：仅显示行数：
+wc  -l test.txt
+
+# -w：仅显示单词数
+wc  -w test.txt 
+
+# wc  -w test.txt 
+wc  -c test.txt 
+
+# cat 语法：
+cat  -options 文件名
+
+# -A：显示特殊字符：
+cat  -A test.txt 
+
+# -s：合并空行：
+cat  -s test.copy.txt 
+
+# -b：显示行号：
+cat  -b test.txt 
+
+# cat重定向联用方式1：
+cat  > 文件名  写入文件
+Ctrl + D
+
+# cat重定向联用方式2：
+cat  << 终止符 > 文件名
+终止符合不会被输入进去
+# head语法：
+head  -options 文件名
+
+# -n：需要显示的行数：
+cat  -n test.txt 
+
+# --line：同上：
+cat  --line 5 test.txt 
+
+# -数字：同上：
+cat  -5 test.txt 
+
+# tail语法：
+tail  -options 文件名
+
+# 查看文件的51行到60行：
+tail  -50 test.txt | head -10
+
+
+# more命令：
+空格  # 向下滚动一屏内容
+b  # 向上滚动一屏内容
+Enter  # 向下滚动一行
+h  # 显示帮助菜单
+=  # 显示当前行号
+:f  # 显示当前文件名及行号 
+q # 退出more命令
+
+# less命令：
+less –M test.txt # 显示文件名的百分比、当前行号、总行数
+less –N test.txt # 显示每行的行号
+
+G  # 跳到文末
+g # 跳到文首
+# 支持PgUp、PgDn、↑、↓
+/字符 # 搜索对应字符
+n/N # 向下/向上匹配结果
+
+
+#############vim的操作
+不同的模式下对应着不同的功能与命令：
+
+扩展模式：
+
+键
+
+功能
+
+:w
+
+将文件写入磁盘
+
+:q
+
+退出vi编辑器
+
+:wq
+
+保存并退出vi编辑器
+
+:w!
+
+强行将文件写入/存入磁盘
+
+:q!
+
+忽略修改，强行退出vi编辑器
+
+:wq!
+
+强行保存并退出vi编辑器
+
+
+
+
+键
+
+功能
+
+:set  nu
+
+显示行号
+
+:set nonu
+
+隐藏行号
+
+:set ic
+
+指令搜索时忽略大小写
+
+:set noic
+
+指令搜索时区分大小写
+
+:set  list
+
+显示特殊字符
+
+:set nolist
+
+隐藏特殊字符
+
+:set showmode
+
+显示当前操作模式
+
+:set noshowmode
+
+不显示当前操作模式
+
+
+插入模式：
+
+键
+
+功能
+
+a
+
+在光标后的位置进入插入模式
+
+i
+
+在光标前的位置进入插入模式
+
+A
+
+在光标当前行之后的位置进入插入模式
+
+I
+
+在光标当前行之前的位置进入插入模式
+
+o
+
+在当前行之下开启新的一行进入插入模式
+
+O
+
+在当前行之上开启新的一行进入插入模式
+
+ESC
+
+返回命令模式
+
+
+命令行模式：
+光标移动
+
+键
+
+光标的移动
+
+h、←、Backspace
+
+向左移动一个字符
+
+l、→
+
+向右移动一行
+
+j、↓
+
+向下移动一行
+
+k、↑
+
+向上移动一行
+
+w
+
+向前移动一个单词
+
+b
+
+向后移动一个单词
+
+e
+
+移动到当前字的结尾
+
+$
+
+移动到当前行的结尾
+
+0
+
+移动到行的开始
+
+^
+
+移动到当前行的第一个非空白字符
+
+Enter
+
+移动到下一行的开始
+
+(
+
+向后移动一个句子
+
+)
+
+向前移动一个句子
+
+{
+
+向上移动一个段落
+
+}
+
+向下移动一个段落
+
+
+
+键
+
+光标快速移动
+
+G
+
+跳转至文件的最后一行
+
+mG
+
+跳转至文件的第n行
+
+Ctrl+d
+
+光标向下移动半个屏幕
+
+Ctrl+u
+
+光标向上移动半个屏幕
+
+
+修改、删除、复制
+
+键
+
+功能
+
+cc
+
+修改光标所在行
+
+cl
+
+修改光标所在字符
+
+cw
+
+修改光标所在单词
+
+dl
+
+删除光标所在字符
+
+dd
+
+删除光标所在行
+
+dw
+
+删除光标所在单词
+
+yy
+
+复制光标所在行
+
+yl
+
+复制光标所在字符
+
+yw
+
+复制光标所在单词
+
+粘贴
+
+键
+
+功能
+
+p
+
+向后粘贴
+
+P
+
+向前粘贴
+
+
+撤销
+
+键
+
+功能
+
+u
+
+复原最近的一次变更
+
+Ctrl+R
+
+取消最近的一次复原
+
+U
+
+复原当前行的所有变化
+
+
+关键字搜索
+
+键
+
+功能
+
+/关键字
+
+向下搜索关键字
+
+?关键字
+
+向上搜索关键字
+
+n
+
+继续同方向的搜索
+
+N
+
+继续进行反方向的搜索
+
+
+关键字替代
+
+前缀
+
+功能
+
+n1,n2
+
+操作n1至n2行
+
+1, $或%
+
+操作整个文件
+
+.,.+n
+
+操作当前行+n行内容
+
+.,.-n
+
+操作当前行-n行内容
+
+:前缀s/被替代字符/新字符/g
+
+
+
+其它
+
+键
+
+功能
+
+dtc
+
+删除从光标所在处到字符c的所有内容，其中c是任意一个字符
+
+rc
+
+删除光标所在处的字符并以字符c取代，其中c是任意一个字符
+
+cw
+
+进入插入模式用输入覆盖从光标处到这个单词结尾处的所有内容
+
+x
+
+删除光标所在处的字符
+
+j
+
+将当前行与之下的行合并
+
+~
+
+将光标所在字母的大小写互换
+
+ndd
+
+从光标所在行算起删除n行，n为自然数
+
+nyy
+
+从光标所在行起复制n行
+
+nx
+
+删除n个字符
+
+R
+
+以输入的字符代替原有字符，Esc键退出
+
+.:
+
+重复之前的命令
+
+#####cut paste
+
+# 截取第一列：
+cut –f 1 text.txt
+
+# 截取第二列和第四列：
+cut –f 2,4  text.csv
+
+# 截取第二列至第四列：
+cut –f 2-4  text.csv
+
+# 以逗号作为分隔符截取第一列：
+cut –f 1 –d , text.csv
+
+# 截取第二至第三个字符
+cut –c2-3  text.txt
+
+# 横向粘贴两个文件
+paste  text.txt text.csv
+
+# 以_作为分隔符横向粘贴两个文件
+
+paste –d _ text.txt text.csv
+
+
+##### sort, uniq
+# 文件内容排序(默认为升序)：
+sort my_sort.txt
+
+# 反向排序(降序)：
+sort -r my_sort.txt
+
+# 忽略字符大小写：
+sort -f my_sort.txt
+
+# 以数字的顺序排序:
+sort -n my_sort.txt
+
+# 去除重复的行:
+sort -u my_sort.txt
+
+# 统计每行出现的次数:
+uniq -c my_sort.txt
+
+# 只显示重复的行:
+uniq -d my_sort.txt
+
+# 忽略字符大小写：
+uniq -i my_sort.txt
+
+# 只显示出现一次的行：
+uniq -u my_sort.txt
+
+######################关于管道符和其他的指示
+1、& 表示任务在后台执行，比如运行一个jar文件，但是希望是后台运行可以执行
+java -jar test.jar &
+
+2、&& 表示前一条命令执行成功时，才执行后一条命令 ，如 echo 'step1‘ && echo ‘step2’
+step1执行成功才会执行step2
+step2执行失败，step2不会执行
+
+3、| 表示管道，上一条命令的输出，作为下一条命令参数，如 echo ‘yes’ | wc -l
+nl ./test | sed ‘2,5d’
+将test里面的内容和对应行号输出，作为sed 命令的输入参数
+sed ‘2,5d’ 输入参数A
+输入参数A:（nl ./test的输出）
+
+4、|| 表示上一条命令执行失败后，才执行下一条命令，echo 'step1‘ || echo ‘step2’
+step1执行失败才会执行step2
+step2执行成功，step2不会执行
+
+#####################区别
+1. 正则表达式与通配符
+正则表达式用来在文件中匹配符合条件的字符串，正则是包含匹配。grep、awk、sed等命令可以支持正则表达式。
+通配符用来匹配符合条件的文件名，通配符是完全匹配。ls、find、cp这些命令不支持正则表达式，所以只能使用shell自己的通配符来进行匹配了。
+
+
+
+2. 通配符：
+通配符	作用
+?	匹配一个任意字符
+*	匹配0个或任意多个字符，也就是可以匹配任何内容
+[]	匹配中括号中任意一个字符
+[-]	匹配中括号中任意一个字符，-代表一个范围
+[^]	逻辑非，表示匹配不是中括号内的一个字符
+3. 基本正则表达式
+元字符	作用
+*	前一个字符匹配0次或任意多次。
+.	匹配除了换行符外任意一个字符。
+^	匹配行首。例如：^hello会匹配以hello开关的行。
+$	匹配行尾。例如：hello$会匹配以hello结尾的行。
+[]	匹配中括号中指定的任意一个字符，只匹配一个字符。例如：[aeiou]匹配任意一个元音字符，[0-9]匹配任意一位数字，[a-z][0-9]匹配小写字母和一位数字构成的两位字符。
+[^]	匹配除中括号的字符以外的任意一个字符。例如：[0-9]匹配任意一位非数字字符，[a-z]匹配任意一位非小写字母。
+\	转义符。用于取消，将特殊符号的含义取消。
+\{n\}	表示其前面的字符恰好出现n次。例如：[0-9]\{4\}匹配4位数字，[1][3-8][0-9]\{9\}匹配手机号码。
+\{n,\}	表示其前面的字符出现不小于n次。例如：[0-9]\{2,\}表示两位及以上的数字。
+\{n,m\}	表示其前面的字符至少出现n次，最多出现m次。例如：[a-z]\{6,8\}匹配6到8位的小写字母。
+
+#############example
+例子：
+
+“*”前一个字符匹配0次，或任意多次
+# 匹配所有内容，包括空白行
+grep "a*" test_rule.txt
+
+# 匹配至少包含一个a的行
+grep "aa*" test_rule.txt
+
+# 匹配至少包含两个连续a的字符串
+grep "aaa*" test_rule.txt
+
+# 匹配最少包含4个连接a的字符串
+grep "aaaaa*" test_rule.txt
+“.”匹配除换行符外任意一个字符
+# "s..d" 会匹配在s和d这两个字母之间一定有两个字符的单词
+grep "s..d" test_rule.txt
+
+# 匹配在s和d字母之间有任意字符
+grep "s.*d" text_rule.txt
+
+# 匹配所有内容
+grep ".*" test_rule.txt
+“^”匹配行首，“$”匹配行尾
+# 匹配以大写“M”开关的行
+grep "^M" test_rule.txt
+
+# 匹配以小写“n”结尾的行
+grep "n$" test_rule.txt
+
+# 匹配空白行
+grep "^$" test_rule.txt
+“[]”匹配中括号中指定的任意一个字符，只匹配一个字符
+# 匹配s和i字母中，要不是a、要不是o
+grep "s[ao]id" test_rule.txt
+
+# 匹配任意一个数字
+grep "[0-9]" test_rule.txt
+
+# 匹配用小写字母开头的行
+grep "^[a-z]" test_rule.txt
+“[^]”匹配除中括号的字符以外的任意一个字符
+# 匹配不用小写字母开关的行
+grep "^[^a-z]" test_rule.txt
+
+# 匹配不用字母开头的行
+grep "^[^a-zA-Z]" test_rule.txt
+“\”转义符
+# 匹配使用“.”结尾的行
+grep "\.$" test_rule.txt
+“\{n\}”表示其前面的字符恰好出现n次
+# 匹配a字母连续出现3次的字符串
+grep "a\{3\}" test_rule.txt
+
+# 匹配包含连续的三个数字的字符串
+grep "[0-9]\{3\}" test_rule.txt
+“\{n,m\}” 匹配其前面的字符至少出现n次，最多出现m次
+# 匹配在字母s和i之间有最少一个a，最多3个a
+grep "sa\{1,3\}i" test_rule.txt
+
+
+grep 抓取文本
+
+# 基础用法：
+grep –options 模式 文本名
+grep bio my_sort.txt
+
+# –c: 仅列出包含模式的行数
+grep –c bio my_sort.txt
+
+# –i: 忽略模式中的字母大小写
+grep –i bio my_sort.txt
+
+# –l: 列出带有匹配行的文件名
+grep –l bio ./
+
+# –n:给出匹配的行号
+grep –n bio my_sort.txt
+
+# –v:列出未匹配的行
+grep –v bio my_sort.txt
+
+# –w:忽略部分匹配的行
+grep –w bio my_sort.txt
+
+
+
+# 语法：
+sed -options ‘action’ 文本名
+
+# 选项：
+–n: 仅输出处理过的行
+–i: 输出覆盖原文件
+
+# 动作：
+p:打印
+a:追加
+i:插入
+i:插入
+c:整行替换
+“行范围s/旧字符串/新字符串/g”:模式匹配替换
+
+# 打印第二行：
+sed ‘2p’ seq.fasta
+
+# 仅打印第二行
+sed –n ‘2p’ seq.fasta
+
+# 打印2至5行
+sed –n ‘2,5p’ seq.fasta
+
+# 在第二行后加入指定内容：
+sed ‘2a >newgene’ seq.fasta
+
+# 在第二行和第三行后加入指定内容：
+sed ‘2a >newgene’ seq.fasta |\
+sed ‘3a TCTGAGAGTCAA’
+sed ‘2a >newgene \nTCTGAGAGTCAA’ seq.fasta
+
+# 在第三行前加入指定内容：
+sed ‘3i >newgene’ seq.fasta
+
+# 将第三行替换为指定内容：
+sed ‘3c >newgene’ seq.fasta
+
+# 替换字符串：
+sed ‘s/ch./chromosome/g’ seq.fasta
+
+# 替换第三行的字符串：
+sed ‘3s/chr/chromosome/g’ seq.fasta
+
+# 替换第三至6行的字符串：
+sed ‘3,6s/chr/chromosome/g’ seq.fasta
+
+# 替换非三至6行的字符串：
+sed ‘3,6!s/chr/chromosome/g’ seq.fasta
+
+# 字符一一对应替换：
+sed ‘y/ATCG/TAGC/’ seq.fasta
+
+# 删除匹配行：
+sed ‘/organism/d’ seq.fasta
+
+# 删除字符：
+sed ‘s/org.*=//g’ seq.fasta
+sed ‘s/org[A-z]*=//g’ seq.fasta
+
+# 多个actions：
+sed ‘s/chr/chromosome/g ; 2a testline’ seq.fasta
+
+# 多次替换字符串：
+sed ‘s/chr/chromosome/g ; s/gene/Gene/g’ seq.fasta
+
+# 处理时覆盖原文件：
+sed –i ‘2a >newgene \nTCTGAGAGTCAA’ seq.fasta
+
+# 覆盖原文件时备份：
+sed –i.bak ‘2a >newgene \nTCTGAGAGTCAA’ seq.fasta
+
+echo 类似打印的功能
+

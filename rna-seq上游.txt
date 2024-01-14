@@ -1,0 +1,30 @@
+#下载
+prefetch SRR1039508
+#下载的sra数据需要转换为fastq格式
+fastq-dump --gzip --split-3 -O ./  ./SRR*
+# 单个fq文件质控
+fastqc SRR11618846
+fastqc -t 6 -o ./ ./SRR*fastq.gz
+# 多个质控结果的整合
+multiqc ./  # 数据文件在当前目录下
+
+# 处理单个样本 过滤 低质量的碱基和接头
+trim_galore -q 25 --phred33 --length 36 -e 0.1 --stringency 3 --paired ./SRR1039508_1.fastq.gz  SRR1039508_2.fastq.gz  -o ./ & > ./bashtest.log
+
+#序列对比
+ hisat2 -t -p 12 -x ../reference/grch38/genome -1 ./SRR1039508_1_val_1.fq.gz  -2 ./SRR1039508_2_val_2.fq.gz  -S ./hisat2_aln.sam > SRR11618846.hisat2.log
+
+#SAM转BAM
+sam转bam
+
+# 单样本处理
+samtools sort -@ 15 -o hisat2_aln.bam  hisat2_aln.sam 
+
+sam转bam后的对比
+BAM建索引
+# 单样本处理
+samtools index  hisat2_aln.bam hisat2_aln.bam.bai 
+
+#表达定量
+nohup featureCounts -T 5 -p -t exon -g gene_name -a /home/zyfone/hard-disk/atac/reference/re.gtf -o all.id.txt hisat2_aln.bam >counts.id.log &
+# -T 线程数；-p 双端序列；-t 设置feature-type，默认是exon；-g 默认是gene_id； -a 参考gtf文件名；-o 输出文件的名字

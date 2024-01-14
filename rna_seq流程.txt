@@ -1,0 +1,381 @@
+转录组(transcriptome)广义上指某一生理条件下，细胞内所有转录产物的集合，包括信使RNA、核糖体RNA、转运RNA及非编码RNA；狭义上指所有mRNA的集合。
+
+转录组测序分析根据有/无参考基因组，分为有参和无参转录组分析。转录组数据分析的一般流程为原始测序数据下载、数据质控过滤、比对、基因表达定量分析等，其中上游分析利用Linux系统完成，下游差异表达分析基于R语言完成。
+| 0 配置环境
+conda的下载与安装
+
+    官网下载地址：https://conda.io/miniconda.html
+    代码下载
+
+# wget命令下载，还可添加-c参数断点续传
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh  
+# bash命令运行下载的文件，按Enter和yes即可  
+bash Miniconda3-latest-Linux-x86_64.sh  
+# 更新系统环境变量文件  
+source ~/.bashrc
+
+设置镜像
+
+conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/cloud/bioconda/  
+conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/cloud/conda-forge/  
+conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/free/  
+conda config --add channels https://mirrors.bfsu.edu.cn/anaconda/pkgs/main/  
+conda config --set show_channel_urls yes
+
+安装数据下载环境
+
+conda create -n download  
+conda activate download  
+conda install -y -c hcc aspera-cli  
+conda install -y -c bioconda sra-tools  
+which ascp  ## 一定要搞清楚你的软件被conda安装在哪  
+ls -lh ~/miniconda3/envs/download/etc/asperaweb_id_dsa.openssh
+
+安装数据处理软件
+
+    常见质控软件 fastqc,multiqc
+    常见过滤软件 trim-galore,fastp
+    常见比对软件 star,hisat2,bwa,
+    bowtie2,subread,tophat
+    常见定量软件 htseq,bedtools,
+    deeptools,salmon
+
+conda create -n rna # 使用conda创建小环境，方便不同项目数据处理的管理
+conda activate rna   # 激活小环境,退出小环境 #deactivate rna
+conda install -y -c bioconda fastqc multiqc trim-galore hisat2 subread  
+conda install -y -c bioconda salmon 
+conda install -y -c bioconda samtools 
+# 添加-y参数安装过程中不再提问,默认选的yes;-c参数是断点续传
+
+    运行下面代码，检查软件是否安装成功，无error信息即为安装成功
+
+fastqc --help 1>/dev/null  
+trim_galore --help 1>/dev/null  
+hisat2 --help 1>/dev/null  
+featureCounts --help 1>/dev/null
+
+| 1 原始数据下载
+下载工具的安装
+
+    从NCBI官网下载SRA原始数据，使用的下载工具是SRA Toolkit，需要根据自己电脑配置及需求在官网选择合适版本。
+    代码下载
+
+# wget命令下载，还可添加-c参数断点续传
+wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.0.0/sratoolkit.3.0.0-centos_linux64.tar.gz
+# -C参数解压到指定文件夹(此处是用户自己的软件目录)
+tar -zxvf sratoolkit.3.0.0-centos_linux64.tar.gz -C /home/st8/ssd2/software
+# 配置环境变量
+vim .bashrc # 进入vim编辑器，输入i编辑.bashrc文件
+export PATH=$PATH:/root/biosoft/sratoolkit.3.0.0-centos_linux64/bin   #按esc后输入冒号：wq保存退出
+source .bashrc # source一下使更新生效
+#测试一下是否可以正常使用
+prefetch --help  or prefetch -V
+
+创建目录管理
+
+数据下载前务必先创建好目录，规律的存放文件有利于查找和追溯，转录组数据分析目录管理示例如下，仅供参考：
+
+图片
+原始数据下载
+
+原始数据从NCBI官网下载，GEO Datasets 作为已发表文献的参考数据集，其中的数据是根据研究者需求进行过处理的，如果需要将多个数据集放到一起参考，则需要得到原始数据。
+
+转录组测序和芯片这样的高通量数据的原始数据存放在SRA（NCBI Sequence Read Archive）数据库，而RT-PCR这类低通量数据，可以直接在GEO Dataset的界面下载原始数据的矩阵。
+
+GEO Datasets的GPL代表测序或芯片平台，GSE记录实验项目编号，GSM代表单个样本数据，每个GSE ID可以对应到SRA数据库的SRP ID，点击SRP编号可以跳转到SRA数据库，示例如下：
+
+图片
+
+    以上述SRP033351为例，演示wget代码下载过程，下载地址的获取
+
+图片
+
+图片
+
+# 单个SRR文件原始数据的下载
+wget https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039508/SRR1039508.sralite.1
+# 批量下载(共16个样本)
+for ((i=508;i<=523;i++)) ;do wget https://sra-downloadb.be-md.ncbi.nlm.nih.gov/sos5/sra-pub-zq-11/SRR001/039/SRR1039$i/SRR1039$i.sralite.1;done
+
+
+    以上述SRP033351为例，通过下载的SRR_Acc_list.txt文件（里面是SRP对应的所有SRR编号）进行SRA原始数据的下载。
+
+图片
+
+图片
+
+# 单个SRR文件原始数据的下载
+prefetch SRR1039508
+# 批量下载
+cat SRR_Acc_list.txt|while read SRR_Acc_list.txt;do (prefetch $SRR_Acc_list.txt &);done # 循环命令挂后台需用括号
+
+ ascp -v -i ~/.aspera/connect/etc/asperaweb_id_dsa.openssh -k 1 -T -l 200m anonftp@ftp.ncbi.nlm.nih.gov:/sra/sra-instant/reads/ByRun/sra/SRR/SRR949/SRR949627/SRR949627.sra ~/data/
+
+    本次实战分析随机选取给定的SRR_Acc_list.txt中的三个样本进行数据处理，原始数据下载如下：
+
+# 批量下载
+conda activate rna #激活数据处理小环境rna
+mkdir raw qc clean align featureCounts #用户目录下新建文件夹分类存放数据
+cat >id #将选取的3个样本SRR文件名称写入id
+SRR11618846
+SRR11618852
+SRR11618853
+cat id |while read id;do(prefetch $id &);done 
+
+    下载的sra数据需要转换为fastq格式
+
+#批量处理下载的sra数据
+fastq-dump --gzip --split-3 -O ./ /home/st8/ssd2/tree100/project/raw/rawdata/SRR*
+# gzip参数输出的压缩后的fq文件，split-3参数将双端测序分为两份，放在不同的文件，对于一方有而一方没有的reads会单独放在一个文件里，-O参数代表输出位置，默认是当前目录
+
+    生成的fastq.gz文件
+
+图片
+| 2 质控过滤
+
+数据质控
+
+    FASTQ数据格式 ：高通量测序得到的原始图像数据文件，经碱基识别（base calling）分析转化为原始测序序列，称之为Raw Data或Raw Reads，结果以FASTQ（简称fq）文件格式存储。
+
+图片
+
+碱基质量得分与错误率的换算关系： Q = -10log10p（p表示测序的错误率，Q表示碱基质量分数） ASCII值与碱基质量得分之间的关系： Phred64 Q=ASCII转换后的数值-64；Phred33 Q=ASCII转换后的数值-33 (更常用)
+
+    数据质量评估
+        fastqc软件：对每个fq序列文件进行质量评估，会对应生成一个html质量评估报告，报告中含有测序数据的各项质量分析指标。
+        multiqc软件：可实现多个质控结果的整合，输出一个整体html质量报告文件。
+
+# 单个fq文件质控
+fastqc SRR11618846
+# 批量fq文件质控
+ls *gz |xargs fastqc -t 10
+# 批量质控的3种运行方法，根据需要选用
+fastqc -t 6 -o ./ /home/st8/ssd2/tree100/project/raw/rawdata/SRR*fastq.gz >qc.log # 直接运行，选用数据文件的绝对路径，结果写入qc.log日志
+nohup fastqc -t 6 -o ./SRR*fastq.gz >qc.log &    # 挂后台运行，适用于简单命令，方便快捷
+nohup sh qc.sh > qc.log &    # 将命令写入.sh脚本，运行sh脚本文件，适用于长而复杂的命令
+# -t参数表示线程数，可以加快处理进度，但是需要根据服务器情况设置；-o参数可以设置输出目录，默认输出当前目录
+
+# 多个质控结果的整合
+multiqc ./  # 数据文件在当前目录下
+multiqc /home/st8/ssd2/project/tree100/project/qc  # 数据文件的绝对路径
+
+    生成的fastqc.html报告文件
+
+图片
+
+    生成的multiqc.html报告文件
+
+图片
+
+    使用浏览器打开任意一个fastqc.html报告文件
+
+图片
+
+    fastqc.html质控报告重点指标解析
+        1. Per base sequence quality：fq文件中每个位置上的所有reads的碱基质量值的一个箱式图，随测序读长变长，碱基质量值下降，绿色区间（Q3--Q40）代表质量很好。
+        2. Per tile sequence quality：每个title的平均质量的偏差，blue颜色质量值好，红色颜色表示质量差，一个好的结果应该是全蓝色的。
+        3.Per sequence quality scores：每个序列质量分数报告，横轴是质量Q值，纵轴是每个质量值对应的read数，一般仅一个>30的尖峰为较好的质量结果。
+        4. Per base sequence content：碱基分布图，横轴是各碱基位置，纵轴是碱基百分比，四条线在同一水平线代表质量较好，read的5'端前几个碱基为随机引物序列，存在一定的偏好性，因此碱基分布图前端波动相对较大。
+        5. Per sequence GC content：GC含量分布图，每个序列整个长度的GC含量，将其与建模的正态分布图进行比较，横轴为平均GC含量，纵轴为每个GC含量对应的序列数量，蓝线为理论正态分布，红线为测量值，二者越接近越好。
+        6. Per base N content：N含量分布图
+        7. Sequence length distribution：read长度分布图，显示被分析的文件中片段大小的分布情况。
+        8. Adapter Content：接头含量，序列中两端adapter的情况，fastqc软件有一个参数-a可以自定义接头序列。
+
+数据过滤
+
+    常用的数据过滤软件Trim Galore和fastp，测序数据需要过滤的标准：
+        含有接头的reads
+        含有低质量值数据
+        含有N比例大于5%的reads（N代表无法识别的碱基信息）
+
+    Trim Galore软件是对FastQC和Cutadapt的包装，适用于所有高通量测序，包括RRBS（Reduced Representation Bisulfite-Seq ), Illumina、Nextera 和smallRNA测序平台的双端和单端数据。主要功能包括两步：首先去除低质量碱基，然后去除3' 末端的adapter, 如果没有指定具体的adapter，程序会自动检测前1million的序列，然后对比前12-13bp的序列是否符合以下类型的adapter:
+        Illumina: AGATCGGAAGAGC
+        Small RNA: TGGAATTCTCGG
+        Nextera: CTGTCTCTTATA
+
+    Trim Galore软件对数据进行过滤
+
+# 处理单个样本
+trim_galore -q 25 --phred33 --stringency 3 --length 36  --paired ./SRR12207279_1.fastq.gz SRR12207279_2.fastq.gz  -o  ./
+trim_galore -q 25 --phred33 --length 36 -e 0.1 --stringency 3 --paired ./SRR12207279_1.fastq.gz -o ./ & > ./bashtest.log
+# 批量处理(脚本运行)
+ls /home/st8/ssd2/tree100/project/raw/rawdata/*1.fastq.gz > 1
+ls /home/st8/ssd2/tree100/project/raw/rawdata/*2.fastq.gz > 2
+paste 1 2 > config   
+cat >qc.sh
+cat $config |while read id 
+do 
+arr = ($id)
+fq1 = ${arr[0]}  
+fq2 = ${arr[1]}
+nohup trim_galore -q 25 --phred33 --stringency 3 --length 36 --paired $fq1 $fq2 -o ./ &
+done
+bash qc.sh
+
+    过滤后得到的文件，存放在对应的clean文件夹
+
+图片
+
+    过滤后再次进行质控，输出multiqc质量报告，查看质控报告，可以查看切掉的adapter序列等信息。
+
+fastqc -t 6 -o ./ /home/st8/ssd2/tree100/project/raw/rawdata/SRR*fastq.gz >qc.log 
+multiqc ./
+
+图片
+| 3 序列比对
+
+NGS测序的短序列reads（几十到几百bp）存储在fastq文件中，虽然这些短reads原本来自有序的基因组，但是经过建库和测序之后，文件中不同的reads之间的顺序关系已经全部被打乱，因此，需要将他们一一比对到参考基因组，序列比对的目的是定位，比对结果有三种状态：匹配match、错配mismatch、空位gap。
+
+那么成千上万甚至上几亿条reads如何在合理的时间内比对到参考基因组上，并且保证错误率在接受范围内？
+
+为了提高比对速度，就需要根据参考基因组序列，经过BWT算法转换成index，而比对的序列其实是index的一个子集，所以并不是直接把read回贴到参考基因组上，而是把read和index进行比较。
+构建索引
+
+    方法一：下载参考基因组，构建索引（耗时较长）
+
+ #构建索引需要在下载好参考基因组的文件夹里面进行，否则比对后找不到文件
+mkdir reference  # 新建文件夹，下载参考基因组&构建索引，注意参考基因组版本与注释文件gff文件版本必须保持一致
+wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+wget -c https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gff.gz
+hisat2 -build Homo_sapiens.GRCh38.dna.primary_assembly.fa GRCh38.dna  #索引前缀GRCh38.dna
+
+    方法二：hisat2官网直接下载参考基因组索引（3.9G，耗时10分钟）
+
+mkdir reference
+wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/grch38.tar.gz
+
+    本次实战选用的下载参考基因组索引，查看解压后的索引文件
+
+图片
+比对到参考基因组
+
+    定义参考基因组索引及输入输出
+
+# 定义索引，确保索引前缀准确，本次索引前缀是genome
+index=/home/st8/ssd2/tree100/project/reference/index/grch38/genome  
+inputdir=/home/st8/ssd2/tree100/project/clean/cleandata/ 
+outdir=/home/st8/ssd2/tree100/project/align 
+
+图片
+
+    比对到参考基因组
+
+# 单样本比对
+hisat2 --dta -t -x../atac/reference/grch38/genome  -1 ./atac/SRR12207279_1_trimmed.gz -2 ./atac/SRR12207279_2_trimmed.gz S ./hisat2_aln.sam > SRR11618610.hisat2.log
+
+hisat2 -p 10 -x  ${index} -1 ${inputdir}/SRR11618846_1_val_1.fq.gz -2 ${inputdir}/SRR11618846_2_val_2.fq.gz -S ${outdir}/SRR11618846.hisat2_aln.sam >SRR11618846.hisat2.log
+
+
+hisat2 -t -p 12 -x /home/zyfone/hard-disk/atac/reference/genomic.fna.gz -1 ../atac/SRR12207279_1_val_1.fq.gz   -2 ../atac/SRR12207279_2_val_2.fq.gz -S ../hisat2_aln.sam > SRR11618846.hisat2.log
+
+hisat2 -t -p 12 -x ../atac/reference/grch38/genome -1 ../atac/SRR12207279_1_val_1.fq.gz  -2 ../atac/SRR12207279_2_val_2.fq.gz -S ../atac/hisat2_aln.sam > SRR11618846.hisat2.log
+
+    查看比对情况
+        总比对率 overall alignment rate （一般要达到80%，越高越好）
+        唯一比对率 aligned concordantly exactly 1 time （一般要达到69.8%，越高越好）
+        多比对率 aligned concordantly >1 times （越低越好）
+
+#批量处理样本时，查看样本比对情况
+multiqc -o ./ SRR*log  # 统计所有样本比对情况
+cat SRR*log |grep 'overall alignment rate' # 查看每个样本总比对率
+cat SRR*log |grep 'alignment concordantly exactly'  # 查看每个样本唯一比对率
+
+    比对生成的sam文件
+
+SAM转BAM
+
+序列比对生成的文件是sam格式，为了让计算机好处理，还需要将sam文件转换为bam文件，bam是sam的二进制格式，减少了sam文件的存储量。使用SAMtools可以实现sam文件与bam文件的转换、排序、建索引等过程。
+
+SAMtools是一个用于操作sam和bam文件的工具合集。能够实现二进制查看、格式转换、排序及合并等功能，结合sam格式中的flag、tag等信息，还可以完成比对结果的统计汇总等。
+
+    SAMtools常用命令
+        samtools view：查看sam，bam文件；sam，bam文件转换
+        samtools sort：sam，bam文件排序，按最左坐标排序，或使用-n时按读取名称排序
+        samtools index：sam，bam文件添加索引，注意排序后才能对bam文件建索引
+        samtools depth：统计测序深度：第一列染色体名称，第二列位点，第三列覆盖深度
+        samtools flagstat：比对统计
+
+# samtools view用法
+samtools view [options] <in.bam>|<in.sam>|<in.cram>  [region ...]
+# samtools默认输出为sam格式文件，设置-b参数则输出为bam格式文件；-h参数表示输出的sam文件带header信息；-S参数默认输入是bam格式文件，若输入的是sam文件，则需要加上改参数；-o表示输出文件
+
+# samtools sort 用法
+samtools sort [-l level]  [-m maxMem]  [-o out.bam]  [-O format]  [-n]  [-T tmpprefix]  [-@ threads]  [in.sam|in.bam|in.cram]
+# -@代表线程，默认是单线程；-o设置最终排序后的输出文件名
+
+    sam转bam
+
+# 单样本处理
+samtools sort -@ 15 -o hisat2_aln.bam  hisat2_aln.sam 
+
+    sam转bam后的对比
+
+
+BAM建索引
+# 单样本处理
+samtools index  hisat2_aln.bam hisat2_aln.bam.bai 
+
+图片
+
+    批量比对，转换、bam建索引（脚本运行）
+
+vim hisat2.sh
+index=/home/st8/ssd2/tree100/project/reference/index/grch38/genome
+inputdir=/home/st8/ssd2/tree100/project/clean/cleandata/
+outdir=/home/st8/ssd2/tree100/project/align
+cat /home/st8/ssd2/tree100/project/clean/cleandata |while read id
+do
+hisat2 -p 5 -x  ${index} 
+-1 ${inputdir}/ ${id}_1_val_1.fq.gz -2 ${inputdir}/ ${id}_2_val_2.fq.gz  2> ${id}.log |samtools sort -@ 3 -o ${outdir}/ ${id}.hisat2_aln.sorted.bam - && samtools index ${outdir}/ ${id}.hisat2_aln.sorted.bam ${outdir}/ ${id}.hisat2_aln.sorted.bam.bai
+done   # -占位符表示前一个命令输出结果通过管道符传给后一个命令，并指定位置；&&串联多个任务的时候使用
+nohup sh hisat2.sh >hisat2.log &
+
+| 4 表达定量
+
+在高通量测序分析中用于下游分析的关键信息是比对到每个genomic feature（外显子、基因等）中的read数目，而计数的过程称为read summarization。常用的基于比对的基因定量软件：Htseq-count，bedtools mutilcov，featureCount 。
+
+featureCounts软件是一款用于RNA-seq和DNA-seq的read summarization工具，应用了高效率的染色体哈希算法和feature区块技术，处理速度非常快，且需要的内存空间少，可以用于单端和双端的数据。
+
+featureCounts软件来自subread包（conda install -y subread），处理速度非常快，使用全部overlap的reads计数，灵活考虑多比对的reads计数。
+输入数据
+
+    featureCounts软件有两个输入文件：一是比对产生的sam/bam文件，二是区间注释文件gtf/gtt/saf格式，-a输入基因组注释文件。两个文件需要来自同一个参考基因组，同一站点且版本也要保持一致。
+
+    sam/bam主要提供read所比对到的染色体的contig，read在染色体上的位置以及CICAR信息，即sam/bam中的三列信息，gtf/gtt/saf主要提供feature identifier(如geneID), chromosomename, start position, end position and strand 五列信息 。
+
+    输入数据注释文件的准备
+
+        参考基因组及配套注释文件的下载：参考基因组来源常用的有NCBI、Ensembl、UCSC数据库，各数据库具体下载方法参考生信菜鸟团相关文章https://mp.weixin.qq.com/s/QnmKCh_4ypcglAjSCUvwQQ
+
+        本次分析前面比对步骤直接从hisat官网下载的参考基因组索引，定量前查看了索引来自的参考基因组版本，发现来自Ensembl数据库release84版本，因此，选择直接从Ensembl数据库下载了对应版本的gtf注释文件。（其实并不太确定这样做会不会影响后续定量结果，所以还是推荐下载参考基因组和注释文件、自行构建索引的方法）
+
+    图片
+
+定量
+
+# 单个样本定量
+gtf=/home/st8/ssd2/tree100/project/reference/index/Homo_sapiens.GRCh38.108.gtf
+featureCounts -T 5 -p -t exon -g gene_id -a $gtf -o SRR11618846  /home/st8/ssd2/tree100/project/align/SRR11618846.hisat2_aln.sam >SRR11618846.count.log
+# 批量处理
+nohup featureCounts -T 5 -p -t exon -g gene_id -a /home/zyfone/hard-disk/atac/reference/re.gtf -o all.id.txt hisat2_aln.bam >counts.id.log &
+# -T 线程数；-p 双端序列；-t 设置feature-type，默认是exon；-g 默认是gene_id； -a 参考gtf文件名；-o 输出文件的名字
+
+定量结果
+
+    counts.id.log日志文件记录了输入文件的基本信息及比对情况
+
+图片
+
+    查看总比对结果
+
+图片
+
+    定量结果的可视化
+
+ multiqc all.id.txt.summary  
+
+图片
+
+图片
+
+    定量的counts结果在“all.id.txt”文件中，Rstudio读取该文件可获得count表达矩阵，便可以进行下游分析。。。。

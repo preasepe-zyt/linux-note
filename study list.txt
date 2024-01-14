@@ -1,0 +1,13 @@
+01-学徒任务板 https://www.mubu.com/doc/1TAhd6KHPg
+03-线上3个月学徒培养计划（以3个月为期限） https://www.mubu.com/doc/3TW_2GbfTg
+04-多种学徒培养方案 文档链接: https://www.mubu.com/doc/1mIVPlpvPg 密码: 6c3d
+
+学徒第1月，基础知识介绍掌握  https://www.mubu.com/doc/38tEycfrQg
+学徒第2月，RNA-seq数据分析实战训练 https://www.mubu.com/doc/38y7pmgzLg
+学徒第3月，WES数据分析实战训练 https://www.mubu.com/doc/1iDucLlG5g
+学徒第4月-01-ChIP-seq数据分析实战训练 https://www.mubu.com/doc/11taEb9ZYg
+学徒第4月-02-ATAC-seq数据处理实战 https://www.mubu.com/doc/2DG1mC2kdg
+学徒第4月-03-表观调控（RNA-seq和ChIP-seq的联合分析） https://www.mubu.com/doc/3Bd4aieYug
+学徒第5月-01-甲基化芯片（450K或者850K）数据处理 https://www.mubu.com/doc/1cwlFgcXMg
+学徒第5月-02-LncRNA实战 https://www.mubu.com/doc/ISk-Ev1tg
+学徒第5月-03-miRNA-seq实战演练 https://www.mubu.com/doc/7A3T8hpUlLv

@@ -1,0 +1,80 @@
+ps aux | grep nohup#显示进程
+kill <PID>
+
+conda config --set auto_activate_base true
+source ~/.bashrc
+conda config --show
+
+#压缩文件
+tar -czvf mpr-3vmr.tar.gz mpr-3vmr
+#写进开机
+vi ~/.bash_profile
+source activate
+
+#设置环境bianl
+export PATH=/home/zyfone/miniconda3/bin:$PATH #设置环境变量
+
+./ #当前路径的   ../ #父路径的
+~/ 表示用户的家目录（home directory）
+nohub bash xxx 后台挂载
+ps -aux | grep gmx  #查看进程
+ps -o etime -p #查看挂载运行时长
+kill -9 xxx
+cat filename | head
+python setup.py install
+ctrl+R 在pyhon中搜索代码
+-i https://pypi.douban.com/simple/ 安装问题 pip
+xxx ==1.2.0
+conda env remove -n
+conda deactivate
+conda info
+conda create -n omicverse python=3.8
+mkdir -p gatk4 &&  cd gatk4
+sudo rm -rf /usr/lib/R #删除软件
+du -h 看看多大
+sudo dpkg -i deb文件
+google-chrome
+tar -zxvf #解压 gz
+rar x filename.rar
+rar x 1000G.EUR.QC.rar 
+source ~/.bashrc
+#查看
+less
+head
+more
+which 可以看路径
+curl -C - -O https://download2.rstudio.org/server/rhel8/x86_64/rstudio-server-rhel-2023.06.0-421-x86_64.rpm
+wget 
+wget http://yum.baseurl.org/download/3.4/yum-3.4.3.tar.gz
+tar zxvf yum-3.4.3.tar.gz
+mdir
+wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb
+sudo dpkg -i libssl1.0.0_1.0.2g-1ubuntu4.20_amd64.deb
+sudo gdebi rstudio-1.1.414-amd64.deb
+
+bash "/home/zyfone/hard-disk/pycharm-community-2023.2.1/bin/pycharm.sh"
+vim 01_fastq-dump.sh
+
+cat sra/config.sra |while read id;
+do 
+arr=($id) 
+srr=${arr[1]} 
+sample=${arr[0]} 
+nohup fastq-dump sra/$srr.sra  --gzip --split-3  -A  $sample -O raw &
+done
+
+find R 
+
+prefetch --option-file xxxx
+
+strings /home/zyfone/miniconda3/pkgs/libstdcxx-ng-13.1.0-hfd8a6a1_0/lib/libstdc++.so.6 | grep GLIBC
+mv libstdc++.so.6 /usr/lib/x86_64-linux-gnu
+
+strings  /usr/lib/x86_64-linux-gnu/libstdc++.so.6| grep GLIBC
+sudo find / -name "libstdc++.so.6*"
+
+sudo rm /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
+#linux安装devtools有问题
+conda install r-gert
+conda install r-usethis
